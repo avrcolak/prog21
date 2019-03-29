@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use 5.20.0;
 use Cwd;
+use File::Copy::Recursive "rcopy";
 
 my $URL = 'http://prog21.dadgum.com';
 my $CWD = cwd;
@@ -90,7 +91,7 @@ sub gen_page {
 		gen_prev($n), $FOOT);
 	push @core, "<script>\n", $script, "</script>" if $script;
  	save "$n.html", $HEAD =~ s/X/$t/r, @core;
-	save "index.html", $HEAD =~ s/X/Programming in the 21st Century/r, @core if $n == $Latest
+	save "index.html", $HEAD =~ s/X/Anti-gaming gaming club/r, @core if $n == $Latest
 }
 
 my $ATOM = <<END;
@@ -141,7 +142,7 @@ sub gen_archive {
 }
 
 
-symlink "$CWD/images", "site/images";
+rcopy("$CWD/images", "site/images");
 
 my @pages;
 if (@ARGV == 0) {
