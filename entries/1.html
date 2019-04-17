@@ -7,40 +7,35 @@ year 2000 release of Majora's Mask in an emulator is limited to a 4:3
 aspect ratio without stretching the interface elements, does not
 detract much from the game.
 
-Nevertheless, while developing games, or anything else for that
-matter, I tend to resize the window, usually cause I'm trying to
-optimize my screen real estate. And then I start noticing
-things. <i>Bad</i> things. Things that shouldn't be the case. Things I
-need to fix. What's more, unlike when I'm playing someone else's game,
-the power to fix things is within reach.
+Nevertheless, I've always appreciated a game which could run nicely in
+whatever viewport I threw at it.
 
-Inevitably, this exact thing happened while I was working on project
-<a href="https://github.com/avrcolak/ZJoy">ZJoy</a>, I noticed that if
-I resized my window horizontally, my pawn actor (Unreal Engine's term
-for a player controllable thing) would appear larger, as if the camera
-was zooming in. A bad thing. Compare <a href="images/1.png">this</a>
-with <a href="images/2.png">this</a>.
+While working on project <a
+href="https://github.com/avrcolak/ZJoy">ZJoy</a>, I noticed that out
+of the box, I could offer no such appreciation. If I widened the game
+window from its initial state, geometry would appear larger, as if the
+camera was zooming in. Compare <a href="images/1.png">this</a> with <a
+href="images/2.png">this</a>.
 
-At first, I thought this actually was the case, that something this
-mysterious engine I was new to, and had just started exploring, was
-causing the camera to move towards my pawn. A quick, reckless reading
-of <a
+At first, I thought this was exactly what was happening, and a quick
+and reckless reading of <a
 href="https://forums.unrealengine.com/development-discussion/blueprint-visual-scripting/11277-fix-camera-to-distance-rather-than-field-of-view">the
-last of these forum posts</a> only served to reinforce my conviction,
-and also seemed to provide a solution to my dilemma. However, hope
-soon turned to sorrow.
+last of these forum posts</a> only reinforced this conviction.
+However, following the suggestion to multiply the camera distance by
+the aspect ratio, proved the explanation faulty.
 
-The problem with the approach outlined by our friend is the behavior
-when the viewport is taller than it is wide, or when the aspect ratio
-is less than 1, or when the aspect ratio is small, is not the same as
-the behavior when the viewport is wider than it is tall, or when the
-aspect ratio is greater than 1, or when the aspect ratio is large.
+The problem with this approach was that making the viewport taller
+than it was wide, was not the same as making the viewport wider than
+it was tall.
 
-Namely, while multiplying the camera distance by the aspect ratio
-seemed to counteract whatever it is the engine was doing for large
-aspect ratios, it also resulted in the camera being closer than it
-should be for small aspect ratios. Not what we wanted, and, as it
-turns out, not what happens by default. It seemed as though we just
+In the language of aspect ratios, when the aspect ratio was less than
+1 (or "small"), the result was different to when the aspect ratio was
+greater than 1 (or "large").
+
+So, while multiplying the camera distance by the aspect ratio seemed
+to counteract whatever the engine was doing for large aspect ratios,
+it also resulted in the camera being closer than it should be for
+small aspect ratios. Not what we wanted. It seemed as though we just
 swapped axis behaviors.
 
 Attempting to fix this by clamping to 1, or using division in lieu of
@@ -50,36 +45,32 @@ extra was revealed, and in the latter, we were also revealing more
 horizontally, an effect that was not mirrored vertically for large
 aspect ratios, at least not to the same extent.
 
-I was starting to realize camera distance was not the droid I was
-looking for.
-
 So, my search began anew, and I quickly stumbled upon <a
 href="https://answers.unrealengine.com/questions/451289/how-to-use-vertical-fov-using-blueprints.html">this</a>.
-This didn't give me what I was after either, but it did lead me to
+It didn't give me what I was after either, but it did lead me to
 consider something I always avoided trying to understand, and got away
-with, at least up untill then - field of view.
+with, at least up until then - field of view.
 
 The <a
 href="https://en.wikipedia.org/wiki/Field_of_view_in_video_games">Wikipedia
 article</a> explains things nicely.
 
-What Unreal was doing by default, without my misguided interference,
-was Vert- scaling. Turns out, this is <a
+What Unreal was doing by default was Vert- scaling. Turns out, this is
+<a
 href="https://www.epicgames.com/unrealtournament/forums/unreal-tournament-discussion/ut-game-general-discussion/215-hor-widescreen-is-a-must">configurable</a>,
 but none of the given <a
 href="https://api.unrealengine.com/INT/API/Runtime/Engine/Engine/EAspectRatioAxisConstraint/index.html">options</a>
 did what I needed. AspectRatio_MaintainYFov gave Hor+ scaling, the
-same thing achieved by our friends at the AnswerHub and approximated
-by our friends in the forums, AspectRatio_MaintainXFov was the
-default, and AspectRatio_MajorAxisFov resulted in less visibility the
-further the aspect ratio was from 1. What I wanted is more of the game
-world to be revealed along the Y axis if the aspect ratio was small,
-and more to be revealed along the X axis if the aspect ratio was
-large. The mysterious and undocumented AspectRaio_MAX seemed
-promising, but turned out to be unused by the engine.
+same thing achieved (or simulated) when following the approach of
+others, AspectRatio_MaintainXFov was the default, and
+AspectRatio_MajorAxisFov resulted in less visibility the further the
+aspect ratio was from 1. What I wanted is more of the game world to be
+revealed along the Y axis if the aspect ratio was small, and more to
+be revealed along the X axis if the aspect ratio was large. The
+mysterious and undocumented AspectRaio_MAX seemed promising, but
+turned out to be unused by the engine.
 
-It was time to dig. Dig deep. Luckily though, deep digging was
-unnecessary. A quick Find All References in Visual Studio on
+Luckily, a quick Find All References in Visual Studio on
 EAspectRatioAxisConstraintEnum lead to enough examples of its use to
 come up with this little snippet.
 
@@ -102,8 +93,8 @@ void UZJoyBlueprintFunctionLibrary::MaintainMinorAxisFov(APawn* Pawn)
 ---
 
 Since I couldn't find an event for when the viewport resized, I just
-call this every tick within my pawn blueprint, and <a
-href="images/4.png">it</a> works a <a href="images/3.png">charm</a>.
+call this every tick within my pawn blueprint, and it <a
+href="images/4.png">works </a> a <a href="images/3.png">charm</a>.
 
 Seeing more or less of the game world can affect gameplay, but with
 some thought and bounds, can also be mitigated to a design constraint.
@@ -114,8 +105,7 @@ today, at least PC gamers expect games to be able to take advantage of
 their displays, and the uptake of ultra wide monitors still makes
 unusual ratios and resolutions a realistic concern. In the case of
 ZJoy especially, which draws inspiration from classic arcade shmups,
-I'd like players to have the option of running in portrait, or tate as
-the community calls it.
+I'd like players to have the option of running in portrait.
 
 Speaking of classic arcade shmups, for one that made use of an
 unusually wide aspect ratio, check out the original 1987 <a
