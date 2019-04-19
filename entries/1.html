@@ -1,78 +1,26 @@
-Many games are built, at least initially, targeting a single
-resolution. This is especially true for early gaming history. Think of
-your favorite fourth generation console game. And, if not a single
-resolution, then usually a single aspect ratio. Most people, including
-myself, are fine with this. The fact that, for example, running the
-year 2000 release of Majora's Mask in an emulator is limited to a 4:3
-aspect ratio without stretching the interface elements, does not
-detract much from the game.
+Many games are built, at least initially, targeting a single resolution. This is especially true for early gaming history. Think of your favorite fourth generation console game. And, if not a single resolution, then usually a single aspect ratio. Most people, including myself, are fine with this. The fact that, for example, running the year 2000 release of Majora's Mask in an emulator is limited to a 4:3 aspect ratio without stretching the interface elements, does not detract much from the game.
 
-Nevertheless, I've always appreciated a game which could run nicely in
-whatever viewport I threw at it.
+Nevertheless, I've always appreciated a game which could run nicely in whatever viewport I threw at it.
 
-While working on project <a
-href="https://github.com/avrcolak/ZJoy">ZJoy</a>, I noticed that out
-of the box, I could offer no such appreciation. If I widened the game
-window from its initial state, geometry would appear larger, as if the
-camera was zooming in. Compare <a href="images/1.png">this</a> with <a
-href="images/2.png">this</a>.
+While working on project <a href="https://github.com/avrcolak/ZJoy">ZJoy</a>, I noticed that out of the box, I could offer no such appreciation. If I widened the game window from its initial state, geometry would appear larger, as if the camera was zooming in. Compare <a href="images/1.png">this</a> with <a href="images/2.png">this</a>.
 
-At first, I thought this was exactly what was happening, and a quick
-and reckless reading of <a
-href="https://forums.unrealengine.com/development-discussion/blueprint-visual-scripting/11277-fix-camera-to-distance-rather-than-field-of-view">the
-last of these forum posts</a> only reinforced this conviction.
-However, following the suggestion to multiply the camera distance by
-the aspect ratio, proved the explanation faulty.
+At first, I thought this was exactly what was happening, and a quick and reckless reading of <a href="https://forums.unrealengine.com/development-discussion/blueprint-visual-scripting/11277-fix-camera-to-distance-rather-than-field-of-view">the last of these forum posts</a> only reinforced this conviction. However, following the suggestion to multiply the camera distance by the aspect ratio, proved the explanation faulty.
 
-The problem with this approach was that making the viewport taller
-than it was wide, was not the same as making the viewport wider than
-it was tall.
+The problem with this approach was that making the viewport taller than it was wide, was not the same as making the viewport wider than it was tall.
 
-In the language of aspect ratios, when the aspect ratio was less than
-1 (or "small"), the result was different to when the aspect ratio was
-greater than 1 (or "large").
+In the language of aspect ratios, when the aspect ratio was less than 1 (or "small"), the result was different to when the aspect ratio was greater than 1 (or "large").
 
-So, while multiplying the camera distance by the aspect ratio seemed
-to counteract whatever the engine was doing for large aspect ratios,
-it also resulted in the camera being closer than it should be for
-small aspect ratios. Not what we wanted. It seemed as though we just
-swapped axis behaviors.
+So, while multiplying the camera distance by the aspect ratio seemed to counteract whatever the engine was doing for large aspect ratios, it also resulted in the camera being closer than it should be for small aspect ratios. Not what we wanted. It seemed as though we just swapped axis behaviors.
 
-Attempting to fix this by clamping to 1, or using division in lieu of
-multiplication for small aspect ratios, also gave disparate results
-between the axes. In the former case, for small aspect ratios, nothing
-extra was revealed, and in the latter, we were also revealing more
-horizontally, an effect that was not mirrored vertically for large
-aspect ratios, at least not to the same extent.
+Attempting to fix this by clamping to 1, or using division in lieu of multiplication for small aspect ratios, also gave disparate results between the axes. In the former case, for small aspect ratios, nothing extra was revealed, and in the latter, we were also revealing more horizontally, an effect that was not mirrored vertically for large aspect ratios, at least not to the same extent.
 
-So, my search began anew, and I quickly stumbled upon <a
-href="https://answers.unrealengine.com/questions/451289/how-to-use-vertical-fov-using-blueprints.html">this</a>.
-It didn't give me what I was after either, but it did lead me to
-consider something I always avoided trying to understand, and got away
-with, at least up until then - field of view.
+So, my search began anew, and I quickly stumbled upon <a href="https://answers.unrealengine.com/questions/451289/how-to-use-vertical-fov-using-blueprints.html">this</a>. It didn't give me what I was after either, but it did lead me to consider something I always avoided trying to understand, and got away with, at least up until then - field of view.
 
-The <a
-href="https://en.wikipedia.org/wiki/Field_of_view_in_video_games">Wikipedia
-article</a> explains things nicely.
+The <a href="https://en.wikipedia.org/wiki/Field_of_view_in_video_games">Wikipedia article</a> explains things nicely.
 
-What Unreal was doing by default was Vert- scaling. Turns out, this is
-<a
-href="https://www.epicgames.com/unrealtournament/forums/unreal-tournament-discussion/ut-game-general-discussion/215-hor-widescreen-is-a-must">configurable</a>,
-but none of the given <a
-href="https://api.unrealengine.com/INT/API/Runtime/Engine/Engine/EAspectRatioAxisConstraint/index.html">options</a>
-did what I needed. AspectRatio_MaintainYFov gave Hor+ scaling, the
-same thing achieved (or simulated) when following the approach of
-others, AspectRatio_MaintainXFov was the default, and
-AspectRatio_MajorAxisFov resulted in less visibility the further the
-aspect ratio was from 1. What I wanted is more of the game world to be
-revealed along the Y axis if the aspect ratio was small, and more to
-be revealed along the X axis if the aspect ratio was large. The
-mysterious and undocumented AspectRaio_MAX seemed promising, but
-turned out to be unused by the engine.
+What Unreal was doing by default was Vert- scaling. Turns out, this is <a href="https://www.epicgames.com/unrealtournament/forums/unreal-tournament-discussion/ut-game-general-discussion/215-hor-widescreen-is-a-must">configurable</a>, but none of the given <a href="https://api.unrealengine.com/INT/API/Runtime/Engine/Engine/EAspectRatioAxisConstraint/index.html">options</a> did what I needed. AspectRatio_MaintainYFov gave Hor+ scaling, the same thing achieved (or simulated) when following the approach of others, AspectRatio_MaintainXFov was the default, and AspectRatio_MajorAxisFov resulted in less visibility the further the aspect ratio was from 1. What I wanted is more of the game world to be revealed along the Y axis if the aspect ratio was small, and more to be revealed along the X axis if the aspect ratio was large. The mysterious and undocumented AspectRaio_MAX seemed promising, but turned out to be unused by the engine.
 
-Luckily, a quick Find All References in Visual Studio on
-EAspectRatioAxisConstraintEnum lead to enough examples of its use to
-come up with this little snippet.
+Luckily, a quick Find All References in Visual Studio on EAspectRatioAxisConstraintEnum lead to enough examples of its use to come up with this little snippet.
 
 ---
 void UZJoyBlueprintFunctionLibrary::MaintainMinorAxisFov(APawn* Pawn)
@@ -92,21 +40,8 @@ void UZJoyBlueprintFunctionLibrary::MaintainMinorAxisFov(APawn* Pawn)
 }
 ---
 
-Since I couldn't find an event for when the viewport resized, I just
-call this every tick within my pawn blueprint, and it <a
-href="images/4.png">works </a> a <a href="images/3.png">charm</a>.
+Since I couldn't find an event for when the viewport resized, I just call this every tick within my pawn blueprint, and it <a href="images/4.png">works </a> a <a href="images/3.png">charm</a>.
 
-Seeing more or less of the game world can affect gameplay, but with
-some thought and bounds, can also be mitigated to a design constraint.
-Of course, not many games are run in aspect ratios too distant from 1,
-and, as mentioned in the opening, aspect ratio and resolution
-independence are not really the most important things. Nevertheless,
-today, at least PC gamers expect games to be able to take advantage of
-their displays, and the uptake of ultra wide monitors still makes
-unusual ratios and resolutions a realistic concern. In the case of
-ZJoy especially, which draws inspiration from classic arcade shmups,
-I'd like players to have the option of running in portrait.
+Seeing more or less of the game world can affect gameplay, but with some thought and bounds, can also be mitigated to a design constraint. Of course, not many games are run in aspect ratios too distant from 1, and, as mentioned in the opening, aspect ratio and resolution independence are not really the most important things. Nevertheless, today, at least PC gamers expect games to be able to take advantage of their displays, and the uptake of ultra wide monitors still makes unusual ratios and resolutions a realistic concern. In the case of ZJoy especially, which draws inspiration from classic arcade shmups, I'd like players to have the option of running in portrait.
 
-Speaking of classic arcade shmups, for one that made use of an
-unusually wide aspect ratio, check out the original 1987 <a
-href="https://en.wikipedia.org/wiki/Darius_(video_game)#Development_and_release">Darius</a>.
+Speaking of classic arcade shmups, for one that made use of an unusually wide aspect ratio, check out the original 1987 <a href="https://en.wikipedia.org/wiki/Darius_(video_game)#Development_and_release">Darius</a>.

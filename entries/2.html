@@ -1,0 +1,78 @@
+If you look at a short clip of the gameplay of any shmup, you are likely to observe a few things. Firstly, the background scrolls in some direction. Secondly, enemies drop into the scene from that direction. Finally, while the player shoots in that direction, they hug the opposite extreme of the viewport.
+
+<figure>
+    <img alt="A short clip of Cho Ren Sha 68K" src="images/5.gif"/>
+    <figcaption>A few seconds of <a href="https://en.wikipedia.org/wiki/Cho_Ren_Sha_68K">Cho Ren Sha 68K</a></figcaption>
+</figure>
+
+If you take a still instead, or go back far enough in the history of shmups, the scrolling disappears, but the genre-typical scene composition reveals itself.
+
+<figure>
+    <img alt="A screenshot of Mushihimesama Futari" src="images/6.png"/>
+    <figcaption>A still of <a href="https://en.wikipedia.org/wiki/Mushihimesama_Futari">Mushihimesama Futari</a></figcaption>
+</figure>
+
+<figure>
+    <img alt="A short clip of Space Invaders" src="images/7.gif"/>
+    <figcaption>A few seconds of <a href="https://en.wikipedia.org/wiki/Space_Invaders">Space Invaders</a></figcaption>
+</figure>
+
+While early shmups didn't even allow players to break this composition, later shmups would do so willfully for effect.
+
+<figure>
+    <img alt="A short clip of Galaxian" src="images/8.gif"/>
+    <figcaption><a href="https://en.wikipedia.org/wiki/Galaxian">Galaxian</a> added scrolling, but didn't allow the player to move vertically </figcaption>
+</figure>
+
+<figure>
+    <img alt="A short clip of Xevious" src="images/9.gif"/>
+    <figcaption><a href="https://en.wikipedia.org/wiki/Xevious">Xevious</a> gave players the freedom to move vertically and take a more aggressive stance. Interestingly, just how aggressive is limited by the bomb crosshair.</figcaption>
+</figure>
+
+<figure>
+    <img alt="A short clip of Thunderforce 4" src="images/10.gif"/>
+    <figcaption><a href="https://en.wikipedia.org/wiki/Thunder_Force_IV">Thunderforce 4</a> forces players to exercise caution at the extreme opposite to the direction of scrolling</figcaption>
+</figure>
+
+Finally, if you black out the background, it becomes clear that the player's movement is limited to just one screen-sized arena - scrolling is merely a cue as to where obstacles and enemies are most likely to pop in.
+
+<figure>
+    <img alt="A short clip of Thunderforce 4 with the background masked" src="images/11.gif"/>
+    <figcaption>In the case of Thunderforce 4, the vertical extent of the player's movement exceeds the extents of the viewport height. By removing any auto-scrolling, we can clearly see the effective size of the game world</figcaption>
+</figure>
+
+Shmups with large effective game worlds, in the sense defined above, often fail to give way to the full extent of shmup scene compositions.
+
+<figure>
+    <img alt="A short clip of Bosconian" src="images/12.gif"/>
+    <figcaption><a href="https://en.wikipedia.org/wiki/Bosconian">Bosconian</a> gave the player a world many screens in size, but the spacecraft always remained firmly in the center</figcaption>
+</figure>
+
+<figure>
+    <img alt="A short clip of Zugya" src="images/13.gif"/>
+    <figcaption><a href="https://www.mobygames.com/game/sharp-x68000/zugy">Zugya</a> instead restricted the player to the extreme opposite the direction the player was facing (but not necessarily moving). The possibility of taking an aggressive stance is removed, but due to camera lag, evasive maneuvers still result in a distinct arrangement. This same approach was taken by other games with Japanese PC <a href="https://en.wikipedia.org/wiki/Herzog_(video_game)">roots</a> such as <a href="https://en.wikipedia.org/wiki/Herzog_Zwei">Herzog Zwei</a> and stage 4 of <a href="https://en.wikipedia.org/wiki/Granada_(video_game)">Granada</a></figcaption>
+</figure>
+
+<figure>
+    <img alt="A short clip of Mercs" src="images/14.gif"/>
+    <figcaption>Yet other games, such as <a href="https://en.wikipedia.org/wiki/Mercs">Mercs</a>, forced an aggressive stance on one axis.</figcaption>
+</figure>
+
+My goal with project ZJoy is to capture the full extent of shmup scene compositions and their effects on gameplay, while still giving the player a large world to explore.
+
+I also want the game to control like a twin stick shooter, and for the controls to fit onto a typical modern gamepad, giving the players the option to use either the analog stick or d-pad for movement. Other control options also need to be available, notably mouse and keyboard, and there should be as little difference in capability between options. Lastly, the controls should be direct. This rules out schemes where, e.g. the left and right triggers are used to determine the coordinates of the camera.
+
+My initial take, before considering the limitations, was a continuous variant on the approach taken in Zugya. The variant arose to accommodate the choice of either the mouse or right analog stick to determine shooting direction, as opposed to prior movement with the d-pad.
+
+However, in the case of using the mouse, this created a sharp inflection point near the center of the screen, which was not where the player's ship was ever positioned. As a result, moving the mouse cursor towards the ship felt a lot like moving two repelling magnets around each other.
+
+At first, I ignored this, but after a round of early concept testing by others, I realized my players wouldn't. However, the fix suggested by one of the testers, turned out not only to solve that issue, but also give the player tremendous flexibility in directing scene composition.
+
+The fix was to tie the distance between the player ship and the spring arm by the extent the analog stick or mouse cursor was away from center (viewport center, in the case of the mouse cursor).
+
+<figure>
+    <img alt="" src="images/15.gif"/>
+    <figcaption>From the genre-typical scene composition, to a cautious neutral stance, to an ever so slightly more aggressive one.</figcaption>
+</figure>
+
+Still, there are some limitations. There's no way to hug all points on the edges of the viewport given a shooting direction. This could be possible by completely separating the camera controls, but how meaningful the gameplay effects would be is a question, and there's not much room for this given the control constraints outlined above. Nevertheless, it's not completely out of the picture, and I would love to see someone else go down this path or an example of where it has been done already.
